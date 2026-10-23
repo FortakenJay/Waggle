@@ -267,7 +267,7 @@ Local verification now records a passing typecheck, 8 passing local tests, 2 ski
 - **Reason:** Jih chose the public repository path and then chose MIT. MIT lets others use, change, and ship the code, including in closed-source projects, if they keep the copyright and license notice.
 - **Alternatives / tradeoffs:** Apache-2.0 adds a patent grant. BSD-3-Clause limits use of the authors' names for promotion. GPL-3.0, AGPL-3.0, and MPL-2.0 require sharing source of changes. Unlicense removes the notice requirement. A private repository with reviewer access was the earlier access alternative.
 - **Consequences:** The root `LICENSE` file is the text GitHub detects. The Open Source mini challenge remains unselected. The GitHub About label appears after this file is pushed.
-- **Verification:** `LICENSE` is present in the working tree. The GitHub page has not been checked after a push of this file.
+- **Verification:** After push, the GitHub license API for `FortakenJay/Waggle` reported SPDX `MIT` for the root `LICENSE` file.
 
 ## Open decisions
 

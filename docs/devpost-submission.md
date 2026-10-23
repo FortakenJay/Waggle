@@ -137,7 +137,7 @@ The public path is chosen. The repository is published at the URL above under th
 
 Still required before submission:
 
-- Confirm the repository page shows MIT in the About section.
+- GitHub's license API reports MIT for the root `LICENSE` file.
 - Confirm all source, assets, and instructions required to run are included.
 - Enter the Open Source mini challenge only if all of its additional requirements are met.
 
@@ -163,7 +163,7 @@ The private reviewer path is no longer the chosen route. It would have meant sha
 - [ ] Source code, assets, fixtures, and run instructions are included.
 - [ ] The repository visibly uses the required Bee technology.
 - [ ] If private, all required reviewers can access it.
-- [ ] If public, the selected license is present and understood.
+- [x] If public, the selected license is present. GitHub reports SPDX `MIT`.
 
 ### Video
 

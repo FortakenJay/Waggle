@@ -18,7 +18,7 @@ This is the project wiki: start with the product story, then follow the links th
 - [Screenshot shot list](screenshots.md) — captures still needed and the safety checks for each
 - [Devpost submission](devpost-submission.md) — pasteable form text, the rules check, and the checklist
 - [Product feedback](product-feedback.md) — evidence-first feedback for the tools used
-- [Friction log](friction-log.md) — optional entry template for the judging bonus
+- [Friction log](friction-log.md) — one recorded Claude entry, plus the blank template
 
 ## Status language
 

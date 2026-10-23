@@ -44,7 +44,7 @@ Claude is used for bounded repository profiles, structured ticket extraction and
 
 ### What needs work
 
-`[Record model, SDK, error, latency, or structured-output friction actually encountered.]`
+Claude does not, on its own, treat a transcript as a mix of real requests and lines that should never become issues. On October 23, 2026, Jih described the friction as getting the model to understand that some speech is not worth processing into GitHub, and that an unsure item has to be saved locally for a person. The call has to force a tool result and spell out the skip, merge, split, and confidence rules. The recorded entry is in [friction-log.md](friction-log.md).
 
 ### How onboarding felt
 
@@ -56,9 +56,9 @@ Claude is used for bounded repository profiles, structured ticket extraction and
 
 ### Evidence
 
-`[Point to a test, fixture run, or captured failure without exposing prompts containing private data.]`
+Inbox entry `e2e020187a891554` for Bee conversation `11575787`: title “Add more information to the footers,” routing confidence 0.10, held locally and not created on GitHub. The other feedback prompts in this section are still open.
 
-Status: **pending live-model verification**.
+Status: **partial**. The structured-output friction is recorded. What worked, onboarding, and whether to use Claude again are still Jih’s to answer.
 
 ## GitHub REST API and Octokit
 

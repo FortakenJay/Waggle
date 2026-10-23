@@ -289,4 +289,4 @@ The measures are defined, but thresholds need a first observed baseline and Jih'
 
 ### O004 — Product feedback and friction
 
-The required feedback headings and optional friction template exist. Actual observations must be added only after Jih uses each tool in the submission workflow.
+One friction entry is recorded from Jih’s October 23, 2026 description of Claude extraction: non-actionable speech and low-confidence routes must stay out of GitHub and wait in the local inbox. The evidence is inbox entry `e2e020187a891554`. Product-feedback prompts for what worked, onboarding, and whether to use each tool again are still open.

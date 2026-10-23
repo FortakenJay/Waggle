@@ -157,7 +157,7 @@ The private reviewer path is no longer the chosen route. It would have meant sha
 - [ ] The pre-existing prototype and submission-window changes are explained.
 - [ ] Product feedback covers every tool used.
 - [ ] Optional feature requests are evidence-based and include urgency.
-- [ ] Optional friction entries contain every required field.
+- [x] Optional friction entries contain every required field. One Claude extraction entry is in [friction-log.md](friction-log.md). More entries can be added. Product feedback is still incomplete.
 - [ ] All metrics, links, outputs, and screenshots were directly verified.
 
 ### Final consistency pass

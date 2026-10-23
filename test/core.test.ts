@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { normalizeConversation } from "../src/bee.js";
 import { dedupeTickets } from "../src/dedupe.js";
-import type { Ticket } from "../src/extract.js";
+import { quoteIsVerbatim, resolveSpeaker, type Ticket } from "../src/extract.js";
 import {
   addEvidence,
   createIssue,
@@ -31,6 +31,21 @@ const ticket: Ticket = {
 };
 
 describe("defensive local behavior", () => {
+  test("accepts a verbatim excerpt and a unique speaker prefix", () => {
+    const spoken = [
+      "This is a note about Split It so remind me to fix the login page on Safari then make the nav bar to be solid.",
+    ];
+    expect(
+      quoteIsVerbatim("remind me to fix the login page on Safari", spoken),
+    ).toBe(true);
+    expect(quoteIsVerbatim("make the nav bar to be solid", spoken)).toBe(true);
+    expect(quoteIsVerbatim("add a nicer login page", spoken)).toBe(false);
+    expect(quoteIsVerbatim("the", spoken)).toBe(false);
+    expect(resolveSpeaker("Jih", ["Unknown", "jihbin"])).toBe("jihbin");
+    expect(resolveSpeaker("Unknown", ["Unknown", "jihbin"])).toBe("Unknown");
+    expect(resolveSpeaker("Sam", ["Unknown", "jihbin"])).toBeUndefined();
+  });
+
   test("normalizes nested Bee payload variants", () => {
     expect(
       normalizeConversation({

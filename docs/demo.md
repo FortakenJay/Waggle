@@ -75,33 +75,52 @@ The second outcome is often the better demo. It shows that repeated demand becom
 
 Keep `--dry-run` on during rehearsals. A live `watch` run can write whenever a valid token is present and dry-run is absent.
 
-## Under-three-minute video outline
+## Submission video
 
-Aim below the platform limit so the ending is not clipped.
+Official rules, from https://amazonappdev2026.devpost.com/rules: under three minutes, English, publicly visible on YouTube or Vimeo, no copyrighted music, and no third-party trademarks without permission. Judges are not required to watch past 3:00. For the Bee track, the video has to show Waggle using data from a Bee device or an Apple Watch running Bee. Naming Bee is not enough.
 
-### 0:00–0:20 — The lost-request problem
+Aim for about 2:30. Show one real conversation becoming GitHub issues. The October 23 runs that already did this are `conv 11575767` (SplitIt issues 1–4) and `conv 11576634` (issues 5–6). Do not present the four inbox titles from `11576634` as created issues. Keep tokens and `.env` off screen.
 
-Show Bee and GitHub side by side. In one sentence: useful software work is spoken in real conversations, but moving it into the correct repository is still manual.
+The four judging criteria are weighted equally. The sections below are arranged so each one is visible.
 
-### 0:20–0:45 — The repository map
+### 0:00–0:20 — Problem
 
-Show `repos` using a safe demo account or sanitized repository names. Explain recent discovery, pins, exclusions, aliases, and cached Claude-built profiles.
+Say who has the pain. Do not open with a name or a school.
 
-### 0:45–1:20 — Preview the fixture
+> A developer hears the bug in a conversation, and then has to remember it, rewrite it, and guess which repository it belongs to. Bee already recorded the words. Waggle sends the request to the repository.
 
-Run the verified fixture preview. Highlight one merge or split, one verbatim quote, and the selected repository. If the verified output does not demonstrate all three, narrate only what it actually demonstrates.
+On screen: a Bee transcript, then an empty GitHub issue list. This is Potential Impact.
 
-### 1:20–1:40 — Make uncertainty useful
+### 0:20–1:50 — Live demo
 
-Show `inbox`. Explain that low-confidence work waits for a human decision and that manual assignment rejoins the same dedupe path.
+This is most of the video. Screen recording plus voiceover is enough. One clean path is the demo.
 
-### 1:40–2:30 — Prove live Bee use
+Show, in order:
 
-Show a short real Bee conversation completing and the CLI reacting to that Bee data. Then show the resulting GitHub issue or evidence comment. Keep the Bee event, CLI action, and GitHub result legible in one sequence.
+1. `bee proxy` already running.
+2. `npm start -- conv 11575767 --verbose`, or a new consented conversation if you record one.
+3. The CLI printing routed requests and the new issue URLs.
+4. Those issues open on GitHub, with the acceptance criteria and one source quote visible.
 
-### 2:30–2:50 — Close on safety and value
+Optional, only if it stays inside this window: `npm start -- inbox` for one item that really is waiting. Say that uncertain work stays local until a person assigns it.
 
-Show the source quote and operation result. Close with the product promise: spoken work becomes traceable repository work, while uncertain routing stays reviewable.
+> This conversation was already on Bee. Waggle read the transcript, kept the spoken words as quotes, and created the issues on the repository those words were about.
+
+This stretch carries Design and Quality of the Idea. Show only behavior the recording actually produces.
+
+### 1:50–2:20 — How it works
+
+A simple architecture shot is enough. Use the diagram in the README.
+
+> Bee’s proxy gives Waggle the conversation. Claude proposes the tickets. The CLI checks the repository, the speaker, and the quotes before GitHub is allowed to change. A repeat lands on the open issue. A lost response is reconciled with a marker stored before the write.
+
+Name the tools you actually used: Bee CLI and conversation API, Claude, GitHub. Do not mention AWS. This is Technical Implementation.
+
+### 2:20–2:40 — What's next
+
+> The person who would use this is a developer who already wears Bee and works in more than one repository. The next recording is the same loop left running with `watch`, so the next finished conversation becomes the next issue without a second command.
+
+Stop before 2:40 so the export stays under three minutes.
 
 ## Rehearsal checklist
 
@@ -112,4 +131,6 @@ Show the source quote and operation result. Close with the product promise: spok
 - The live path uses real Bee data.
 - Any GitHub write goes to a disposable or explicitly approved issue.
 - Every statement about output matches the recorded run.
-- The final edit is in English and under three minutes.
+- The final edit is in English, publicly visible on YouTube or Vimeo, and under three minutes.
+- The upload uses no copyrighted music and no third-party trademarks without permission.
+- A Bee transcript is on screen, and the GitHub result of that same data is on screen.

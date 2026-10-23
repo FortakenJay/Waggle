@@ -8,6 +8,7 @@ export interface Conversation {
   id: string;
   title: string;
   summary: string;
+  state?: string;
   startTime?: string;
   utterances: Utterance[];
 }
@@ -113,6 +114,7 @@ export function normalizeConversation(raw: unknown): Conversation {
         c.detailedSummary,
         c.short_summary,
       ) ?? "",
+    state: firstString(c.state, c.status),
     startTime: firstString(
       c.start_time,
       c.startTime,

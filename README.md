@@ -1,24 +1,52 @@
 # Waggle
 
-Bees do a waggle dance to tell the hive where to go. I named this tool Waggle because it does that job for software work: it hears a spoken request and points the request at a repository.
+Waggle hears a spoken software request in a Bee conversation and points that request at a GitHub repository.
 
-The useful issue is often spoken before it is written.
+**Demo video:** not uploaded. The official rules require a video under three minutes, in English, publicly visible on YouTube or Vimeo. Put that URL here and on the Devpost form. Judges are not required to watch past three minutes.
 
-A teammate notices that Safari breaks the login page. A classmate asks for CSV export. A developer says, “remind me to fix that flaky test,” while their hands are nowhere near GitHub. Bee can preserve those conversations, but someone still has to remember the work, rewrite it, choose a repository, and check whether the issue already exists.
+Submission deadline: Friday, October 23, 2026, 12:00 pm Pacific (2:00 pm Central). Primary track: Bee (Wearable AI). Use cases: developer experience and personal productivity. Mini challenges are not selected.
 
-Waggle is a local TypeScript CLI that closes that gap. It reads Bee conversations, asks Claude for structured software work, routes each candidate against profiles of your GitHub repositories, and turns the result into one of three honest outcomes:
+[Problem](#problem-and-solution) · [Features](#features) · [Stack](#built-with) · [Architecture](#architecture) · [Setup](#setup) · [Testing](#testing-it) · [Demo script](docs/demo.md) · [Devpost draft](docs/devpost-submission.md)
 
-- a new issue;
-- an evidence comment on an open issue that already covers the request; or
-- an inbox item that waits for a human routing decision.
+## Problem and solution
 
-The source words stay attached. The uncertainty stays visible. GitHub writes stay behind an explicit safety boundary.
+Useful software work is often spoken before anyone opens GitHub. Bee keeps the conversation. Someone still has to rewrite the request, pick a repository, and check whether the issue already exists.
 
-> Submission context: this project is being prepared for Devpost's Build, Ship, Shape Amazon Developer Hackathon, with Bee as the primary track and developer experience plus personal productivity as the relevant use cases. Local checks pass; live Bee, Claude, and GitHub evidence is still in progress.
+Waggle is a local TypeScript CLI that reads a Bee transcript, asks Claude for concrete software work, checks every model field, and then creates an issue, adds evidence to an open issue, or leaves the item in a local inbox.
 
-[Setup](#setup) · [Commands](#command-reference) · [Safety](#what-dry-run-means) · [Demo](docs/demo.md) · [Project wiki](docs/README.md) · [Devpost checklist](docs/devpost-submission.md)
+## Features
 
-## From a conversation to a useful issue
+- Reads a completed Bee conversation through the local Bee proxy, or a saved fixture.
+- Builds a local map of your GitHub repositories, with pins, exclusions, and phrase aliases.
+- Keeps source quotes verbatim and rejects a quote that is not copied from a single utterance.
+- Compares a validated request with open issues before it writes. A repeat becomes evidence on the existing issue.
+- Sends unknown, low-confidence, and malformed results to `~/.waggle/inbox.json` instead of guessing a repository.
+- Blocks GitHub writes in `--dry-run`, and reconciles a live write with an invisible operation marker if the response is lost.
+
+These captures are from real command output:
+
+![Waggle CLI showing its commands and safety flags](docs/images/cli-help.svg)
+
+![Waggle inbox reporting dry-run mode and an empty inbox](docs/images/inbox-empty.svg)
+
+A result GIF is not included. The live Bee runs below are the working demonstration.
+
+## Built with
+
+The Bee track requires the code to call Bee at runtime and the video to show that Bee data doing something useful. Waggle does that through the Bee CLI proxy: `GET /v1/conversations`, `GET /v1/conversations/:id`, and the SSE stream in `src/bee.ts`.
+
+| Tool | Role |
+| --- | --- |
+| Bee CLI proxy and conversation API | Source transcripts from a Bee device or an Apple Watch running Bee |
+| Anthropic Claude API | Repository profiles, ticket extraction, and duplicate classification |
+| GitHub REST API through Octokit | Repository discovery, open-issue reads, issues, and evidence comments |
+| TypeScript and Node.js 20 | The local CLI |
+
+AWS Builder is not selected. The code does not call an AWS service.
+
+The Open Source mini challenge is not selected. That challenge asks for an additional public contribution alongside the primary-track project, with its own URL and description. Publishing this repository is the primary submission.
+
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -32,199 +60,9 @@ flowchart LR
     Dedupe -->|"New outcome"| Issue["Create issue"]
 ```
 
-The repository map is not compiled into the source. Waggle discovers repositories you own or collaborate on, excludes archived work, includes recently pushed repositories, and lets you pin older projects. Claude condenses bounded repository metadata into local routing profiles. Your aliases—phrases such as “the robot”—override inference.
+Repository names are not compiled into the source. Waggle discovers repositories you own or collaborate on, skips archived repositories, includes repositories pushed in the last 12 months, and lets you pin older ones. Claude turns bounded metadata and a README excerpt into a local profile. An alias such as “the robot” overrides that inference.
 
-Extraction is structured but not trusted. The CLI checks repository membership, field bounds, enums, confidence, requester identity, and exact quote provenance before a candidate can continue. Low-confidence and malformed candidates go to review instead of becoming plausible-looking GitHub noise.
-
-Dedupe asks a strict question: **if the open issue were completed, would this request also be satisfied?** Related work is not enough. A true repeat becomes evidence on the existing issue.
-
-This terminal capture is generated from the real `--help` output, not a designed mock:
-
-![Waggle CLI showing its commands and safety flags](docs/images/cli-help.svg)
-
-## Why Bee
-
-Bee supplies the data that ordinary issue forms miss: the request as it was said, the surrounding conversation, and the moment the conversation completed. Waggle uses the local Bee proxy or direct Bee API, not a copied summary pasted into another tool. The live `watch` path listens for completion or summary events, fetches the complete conversation, and sends it through the same reviewed pipeline as a saved fixture.
-
-This is different from treating every transcript line as a todo. Software work can come from a client, teammate, classmate, professor, or the developer speaking to themself. Scheduling, billing, small talk, and unsupported ideas are not repository work by default.
-
-## Setup
-
-### Prerequisites
-
-- Node.js 20
-- A Bee device, or an Apple Watch running Bee, for the live path
-- Bee CLI access for `bee proxy`, or a direct Bee API token
-- An Anthropic API key
-- A fine-grained GitHub token scoped to the repositories you intend to read or change
-
-The GitHub operations in this project read repository metadata, README excerpts, and open issues; live mode can create labels, issues, and comments. Grant only the repository access and permissions those calls need.
-
-### Install and configure
-
-```bash
-npm install
-cp .env.example .env
-```
-
-Fill in `.env` using the comments in `.env.example`. Never commit it. The relevant settings are:
-
-- `ANTHROPIC_API_KEY` — repository profiles, extraction, and dedupe
-- `GITHUB_TOKEN` — repository and issue reads; required for GitHub writes
-- `BEE_API_BASE` — defaults to the local Bee proxy
-- `BEE_TOKEN` — only for direct Bee API access
-- `DEV_NAME` — your speaker name in Bee transcripts
-- `CLAUDE_MODEL` — optional model override
-- `WAGGLE_HOME` — optional local-state directory override
-
-Start the Bee proxy in another terminal for real conversations:
-
-```bash
-npm install -g @beeai/cli
-bee login
-bee proxy
-```
-
-### Configure repository policy
-
-Waggle stores local files under `~/.waggle/` by default. Its config schema is:
-
-```json
-{
-  "version": 1,
-  "pinnedRepos": ["owner/quiet-but-active-project"],
-  "excludedRepos": ["owner/private-scratchpad"],
-  "aliases": {
-    "the robot": "owner/delivery-robot"
-  },
-  "routingConfidence": 0.6
-}
-```
-
-- `pinnedRepos` includes a repository even when its last push is older than 12 months.
-- `excludedRepos` removes a repository from routing.
-- `aliases` maps your language to one repository and beats inferred routing.
-- `routingConfidence` must be between `0` and `1`.
-
-A repository cannot be both pinned and excluded. An alias cannot target an excluded, archived, or unavailable repository.
-
-Build the first profile cache:
-
-```bash
-npm start -- repos refresh
-npm start -- repos
-```
-
-Profile refresh calls both GitHub and Claude. Review the resulting repository list before processing a conversation.
-
-## Start with a preview
-
-The fixture path does not need Bee, but it still uses the same extraction, routing, dedupe, and write rules:
-
-```bash
-npm start -- fixture fixtures/robotics-team.json --dry-run --verbose
-```
-
-Keep `--dry-run` in rehearsal commands. A fixture is not permanently sandboxed; with a GitHub token and no dry-run flag, it can create real work.
-
-The bundled fixture repository names are fictional. When `.env` contains a GitHub token, clear it for these fixture previews so the CLI does not try to read issues from those names:
-
-```bash
-GITHUB_TOKEN= npm start -- fixture fixtures/robotics-team.json --dry-run --verbose
-```
-
-That run cannot exercise live GitHub dedupe; it exercises extraction, routing, review, rendering, and the write guard.
-
-The fixture files declare contracts, not successful run results:
-
-- `robotics-team.json` expects three accepted requests in `example-labs/delivery-robot` and one review item. The repeated reconnect problem should merge with both quotes; CSV route export and battery temperature should split.
-- `solo-mixed.json` expects three accepted requests—two in `sample-dev/study-planner`, one in `sample-dev/portfolio-web`—and one review item. The flaky test and calendar export should split, while the Spanish timezone requirement should support the calendar ticket.
-
-Live-model tests assert those contracts when `ANTHROPIC_API_KEY` is available. They have not been reported as passing here.
-
-## Command reference
-
-The final command surface is:
-
-```text
-waggle repos
-waggle repos refresh
-
-waggle fixture <file.json> [flags]
-waggle conv <conversation-id> [flags]
-waggle latest [count] [flags]
-waggle watch [flags]
-
-waggle inbox
-waggle inbox assign <n> <owner/repo> [flags]
-waggle inbox drop <n>
-```
-
-During local development, use `npm start --` before the arguments:
-
-```bash
-npm start -- latest 3 --dry-run
-npm start -- conv <conversation-id> --dry-run --verbose
-npm start -- watch --dry-run
-```
-
-Relevant flags:
-
-- `--dry-run` — block GitHub mutations
-- `--verbose` — print complete issue previews, including source quotes
-- `--force` — repeat extraction for a processed conversation without bypassing applied operation IDs
-- `--min-confidence <0..1>` — override the extraction threshold
-- `--debug` — print one raw Bee payload for shape diagnosis
-
-`npm start -- help` was run successfully against this command surface. Processing commands still require separate verification.
-
-## The review inbox
-
-Unknown is a valid result. List local review items:
-
-```bash
-npm start -- inbox
-```
-
-The list displays a number for each current item. Assign a validated candidate to a repository already present in the cache:
-
-```bash
-npm start -- inbox assign <n> owner/repo --dry-run --verbose
-```
-
-Or deliberately remove it:
-
-```bash
-npm start -- inbox drop <n>
-```
-
-Manual assignment does not skip dedupe or write safety.
-
-The empty state is also explicit:
-
-![Waggle inbox reporting dry-run mode and an empty inbox](docs/images/inbox-empty.svg)
-
-## What dry-run means
-
-Dry-run means **no GitHub mutations**. It blocks label creation, issue creation, and evidence comments at the GitHub boundary.
-
-It may still:
-
-- read Bee conversations;
-- call Claude;
-- read repositories and open issues;
-- refresh `~/.waggle/repos.json`;
-- add or update `~/.waggle/inbox.json`;
-- save planned, unapplied operations in `~/.waggle/state.json`;
-- print transcript-derived source quotes.
-
-Live GitHub writes require both `GITHUB_TOKEN` and the absence of `--dry-run`. Read [the complete safety model](docs/safety.md) before the first live command.
-
-Without `GITHUB_TOKEN`, the CLI automatically enters dry-run. GitHub reads are then unavailable, so a fixture preview cannot prove that dedupe found no existing issue.
-
-## Retry safety
-
-A network timeout can happen after GitHub accepts a write but before the CLI receives the response. Waggle addresses that narrow ambiguity with a persisted operation ledger and an invisible marker:
+A candidate continues only after the CLI checks repository membership, field bounds, enums, confidence, the requester’s speaker name, and quote provenance. Dedupe asks one question: if the open issue were finished, would this request also be done?
 
 ```mermaid
 sequenceDiagram
@@ -242,42 +80,163 @@ sequenceDiagram
     CLI->>State: Record applied result
 ```
 
-This is a concrete retry mechanism, not a claim of universal exactly-once delivery.
+The marker covers a lost HTTP response. It is not a claim of universal exactly-once delivery.
 
-## Local files
+## Setup
 
-By default:
+### Prerequisites
 
-- `~/.waggle/config.json` — pins, exclusions, aliases, and routing threshold
-- `~/.waggle/repos.json` — generated repository profiles
-- `~/.waggle/inbox.json` — work waiting for review
-- `~/.waggle/state.json` — processed conversations and GitHub operations
+- Node.js 20
+- A Bee device, or an Apple Watch running Bee, plus Bee CLI access
+- An Anthropic API key
+- A fine-grained GitHub personal access token for the account that owns the target repositories
 
-Updates use temporary-file rename and a short-lived single-writer lock. These files can contain repository and conversation context; inspect them before sharing.
+For live issue creation the token needs Contents: Read, Issues: Read and write, and Metadata: Read. A token without Issues write can read the repository and still receive `403 Resource not accessible by personal access token` on issue creation. That happened on October 23, 2026, and a replacement token with Issues write succeeded.
 
-## Verification status
+### Install
 
-The local implementation checks completed on October 22, 2026, and were run again after the command was renamed to `waggle`:
+```bash
+npm install
+cp .env.example .env
+```
+
+Fill `.env` from the comments in `.env.example`. Never commit `.env`.
+
+- `ANTHROPIC_API_KEY` — profiles, extraction, and dedupe
+- `GITHUB_TOKEN` — repository and issue access
+- `BEE_API_BASE` — local Bee proxy, default `http://127.0.0.1:8787`
+- `BEE_TOKEN` — only for the direct Bee API
+- `DEV_NAME` — your speaker name in Bee transcripts
+- `CLAUDE_MODEL` — optional model override
+- `WAGGLE_HOME` — optional state directory, default `~/.waggle`
+
+Start the proxy in another terminal:
+
+```bash
+npm install -g @beeai/cli
+bee login
+bee proxy
+```
+
+### Repository policy
+
+`~/.waggle/config.json`:
+
+```json
+{
+  "version": 1,
+  "pinnedRepos": ["owner/quiet-but-active-project"],
+  "excludedRepos": ["owner/private-scratchpad"],
+  "aliases": {
+    "the robot": "owner/delivery-robot"
+  },
+  "routingConfidence": 0.6
+}
+```
+
+A repository cannot be both pinned and excluded. An alias cannot point at an excluded, archived, or missing repository.
+
+```bash
+npm start -- repos refresh
+npm start -- repos
+```
+
+`repos refresh` calls GitHub and Claude. Read the cached list before you process a conversation.
+
+## Testing it
+
+There is no web login. The repeatable path is a fixture, and it still calls Claude:
+
+```bash
+GITHUB_TOKEN= npm start -- fixture fixtures/robotics-team.json --dry-run --verbose
+```
+
+Clearing `GITHUB_TOKEN` keeps the preview off fictional repository names. That run does not prove live dedupe. The fixture files state the expected tickets. Those expectations are contracts. A live-model test of them is skipped when `ANTHROPIC_API_KEY` is absent, and those two tests were skipped in the October 23 run below.
+
+The live path needs the proxy and a fine-grained token with Issues write. On October 23, 2026, two completed Bee conversations were processed against `fortakenjay/splitit`:
+
+```bash
+npm start -- conv 11575767 --verbose
+npm start -- conv 11576634 --verbose
+```
+
+The first created [issue 1](https://github.com/FortakenJay/SplitIt/issues/1), [issue 2](https://github.com/FortakenJay/SplitIt/issues/2), [issue 3](https://github.com/FortakenJay/SplitIt/issues/3), and [issue 4](https://github.com/FortakenJay/SplitIt/issues/4). The second created [issue 5](https://github.com/FortakenJay/SplitIt/issues/5) and [issue 6](https://github.com/FortakenJay/SplitIt/issues/6). Four other requests from the second conversation went to the local inbox because a quote was not a verbatim copy of one utterance. Both conversation IDs are now marked processed, so a later run skips them unless you pass `--force`.
+
+`--dry-run` blocks label, issue, and comment writes. It can still read Bee, call Claude, read GitHub, refresh profiles, update the inbox, and store planned operations. Without `GITHUB_TOKEN`, the CLI enters dry-run by itself.
+
+## Challenges and what we learned
+
+These are observations from building and from the October 23 runs. Product-feedback answers for Devpost are still blank in [docs/product-feedback.md](docs/product-feedback.md) and have to be filled from direct use before submission.
+
+- GitHub issue creation has no idempotency key. Waggle stores the operation first and looks for its marker before it writes again.
+- Claude’s tool output is checked at runtime. A plausible title is not enough: the requester must be a transcript speaker, and every quote must be one utterance or a contiguous excerpt of one utterance.
+- A request spoken across several lines can fail that quote check. On conversation `11576634`, four requests landed in the inbox with a title and a reason, and no assignable ticket. How those quotes should be kept is still an open decision.
+- A fine-grained token can show repository admin on a GET and still be forbidden to create issues.
+- Bee can emit the same completion more than once. A processed conversation is skipped, and an applied operation is not created twice.
+
+## What's next
+
+Record the public demo video from [docs/demo.md](docs/demo.md), using a real Bee conversation and one of the GitHub results above. Fill product feedback for Bee, Claude, GitHub, and the Bee CLI. Decide the multi-utterance quote rule before treating the four inbox titles as finished work.
+
+The [roadmap](docs/roadmap.md) keeps later product measures open. It does not add AWS, a hosted service, or a new track.
+
+## Team and license
+
+Jih Bin Luo and Justin Meng. The repository is public at https://github.com/FortakenJay/Waggle. The license is MIT, copyright 2026 Jih Bin Luo and Justin Meng. GitHub’s license API reported SPDX `MIT` for the root `LICENSE` file.
+
+## Command reference
+
+```text
+waggle repos
+waggle repos refresh
+
+waggle fixture <file.json> [flags]
+waggle conv <conversation-id> [flags]
+waggle latest [count] [flags]
+waggle watch [flags]
+
+waggle inbox
+waggle inbox assign <n> <owner/repo> [flags]
+waggle inbox drop <n>
+```
+
+From this checkout, prefix arguments with `npm start --`:
+
+```bash
+npm start -- latest 3 --dry-run
+npm start -- conv <conversation-id> --dry-run --verbose
+npm start -- watch --dry-run
+npm start -- inbox
+npm start -- inbox assign <n> owner/repo --dry-run --verbose
+npm start -- inbox drop <n>
+```
+
+- `--dry-run` blocks GitHub mutations
+- `--verbose` prints the full issue preview, including quotes
+- `--force` extracts a processed conversation again, and does not recreate an operation that is already applied
+- `--min-confidence <0..1>` overrides the extraction threshold
+- `--debug` prints one raw Bee payload
+
+An inbox number comes from the current `inbox` list. Assignment still runs dedupe and the write guard. An inbox row with no validated ticket cannot be assigned.
+
+Local files, under `~/.waggle` unless `WAGGLE_HOME` is set:
+
+- `config.json` — pins, exclusions, aliases, routing threshold
+- `repos.json` — generated profiles
+- `inbox.json` — work waiting for a decision
+- `state.json` — processed conversations and operations
+
+Updates use a temporary-file rename and a short single-writer lock. Inspect these files before you share them. They can contain repository names and conversation text.
+
+## Verification
+
+Run on October 23, 2026, in this checkout:
 
 ```bash
 npm run typecheck  # passed
-npm test           # 8 passed, 2 live-Claude tests skipped
-npm start -- --help
-npm start -- inbox --dry-run
+npm test           # 9 passed, 2 live-Claude tests skipped
 ```
 
-The help and empty-inbox images in this README were regenerated from that second run.
+`npm start -- --help` and `npm start -- inbox --dry-run` were run earlier, and the images above were generated from that output. The two skipped tests are the live Claude fixture contracts. Both live `conv` commands in [Testing it](#testing-it) exited 0 and created the linked issues.
 
-The source scan found no legacy product names under `src/`. Both required fixture commands reached extraction, then stopped because `ANTHROPIC_API_KEY` is unavailable in this environment. Their expected tickets are therefore contracts, not claimed live-model results.
-
-Before submission, run both fixture previews with an Anthropic key, refresh real repository profiles, and record one safe live Bee-to-GitHub result.
-
-## Demo and project record
-
-The [four-step demo](docs/demo.md) covers repository profiles, fixture preview, the review inbox, and the live Bee loop. It also includes an under-three-minute video outline.
-
-The [project log](docs/project-log.md) records every established choice with its reason, alternatives, consequences, and verification status. The [documentation index](docs/README.md) links the product brief, architecture, roadmap, submission material, feedback, friction log, and screenshot plan.
-
-## Repository access
-
-The repository is public at https://github.com/FortakenJay/Waggle. The license is MIT, copyright Jih Bin Luo and Justin Meng. The project does not claim the Open Source mini challenge.
+The [project log](docs/project-log.md) records the product decisions. The [safety model](docs/safety.md) is the full dry-run and recovery description.

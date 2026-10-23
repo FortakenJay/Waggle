@@ -14,9 +14,9 @@ This is the project wiki: start with the product story, then follow the links th
 
 ## Run and present it
 
-- [Four-step demo](demo.md) — live flow and an under-three-minute video outline
+- [Four-step demo](demo.md) — live flow and the submission video script (about 2:30, public YouTube or Vimeo)
 - [Screenshot shot list](screenshots.md) — captures still needed and the safety checks for each
-- [Devpost submission](devpost-submission.md) — draft copy, required fields, and submission checklist
+- [Devpost submission](devpost-submission.md) — pasteable form text, the rules check, and the checklist
 - [Product feedback](product-feedback.md) — evidence-first feedback for the tools used
 - [Friction log](friction-log.md) — optional entry template for the judging bonus
 

@@ -53,6 +53,35 @@ function transcript(conversation: Conversation): string {
     .join("\n");
 }
 
+const MIN_QUOTE_EXCERPT = 12;
+
+export function quoteIsVerbatim(
+  quote: string,
+  utterances: readonly string[],
+): boolean {
+  return utterances.some(
+    (utterance) =>
+      utterance === quote ||
+      (quote.length >= MIN_QUOTE_EXCERPT && utterance.includes(quote)),
+  );
+}
+
+export function resolveSpeaker(
+  requestedBy: string,
+  speakers: readonly string[],
+): string | undefined {
+  const exact = speakers.find(
+    (speaker) => speaker.toLocaleLowerCase() === requestedBy.toLocaleLowerCase(),
+  );
+  if (exact) return exact;
+  const needle = requestedBy.toLocaleLowerCase();
+  if (needle.length < 3) return undefined;
+  const matches = speakers.filter((speaker) =>
+    speaker.toLocaleLowerCase().startsWith(needle),
+  );
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
 function boundedString(
   value: unknown,
   name: string,
@@ -145,19 +174,26 @@ function validateTicket(
     1,
     120,
   );
-  if (
-    !conversation.utterances.some(
-      (utterance) =>
-        utterance.speaker.toLocaleLowerCase() ===
-        requestedBy.toLocaleLowerCase(),
-    )
-  ) {
+  const speaker = resolveSpeaker(
+    requestedBy,
+    conversation.utterances.map((utterance) => utterance.speaker),
+  );
+  if (!speaker) {
     throw new Error("requested_by is not a speaker in the transcript.");
   }
   const quotes = stringList(raw.quotes, "quotes", 1, 8, 1200);
-  const utterances = new Set(conversation.utterances.map((utterance) => utterance.text));
-  if (quotes.some((quote) => !utterances.has(quote))) {
-    throw new Error("every quote must exactly match one transcript utterance.");
+  if (
+    quotes.some(
+      (quote) =>
+        !quoteIsVerbatim(
+          quote,
+          conversation.utterances.map((utterance) => utterance.text),
+        ),
+    )
+  ) {
+    throw new Error(
+      "every quote must be a verbatim utterance or a verbatim excerpt of one utterance.",
+    );
   }
   const confidence = probability(raw.confidence, "confidence");
   let routingConfidence = probability(
@@ -198,7 +234,7 @@ function validateTicket(
     problem,
     acceptanceCriteria,
     priority: priority as TicketPriority,
-    requestedBy,
+    requestedBy: speaker,
     quotes,
     confidence,
     routingConfidence,
@@ -247,7 +283,7 @@ function ticketTool(profiles: RepoProfile[]): Anthropic.Tool {
                 type: "array",
                 items: { type: "string" },
                 description:
-                  "One to eight complete utterance texts copied exactly, without speaker prefixes.",
+                  "One to eight verbatim excerpts copied from utterance text, without speaker prefixes. Use a whole utterance, or the exact contiguous part that states this request when the utterance contains several requests.",
               },
               confidence: {
                 type: "number",
@@ -316,20 +352,24 @@ export async function extractTickets(
     .join("\n");
   const developerName =
     options.developerName ?? process.env.DEV_NAME ?? "the developer";
+  const speakers = [
+    ...new Set(conversation.utterances.map((utterance) => utterance.speaker)),
+  ];
   const response = await anthropic.messages.create({
     model: MODEL,
     max_tokens: 5000,
     system: `Turn spoken conversations into actionable GitHub tickets.
 
 Rules:
-- The developer's transcript name is "${developerName}".
+- The developer's configured name is "${developerName}".
+- requested_by must be copied exactly from these transcript speakers: ${speakers.join(", ") || "(none)"}.
 - Another speaker's idea counts only when it is clearly a request, or when the developer agrees to do it.
 - The developer's own "I need to", "I should", and "remind me" statements count as requests.
 - Capture explicit bugs, features, tasks, and questions that require repository work.
 - Ignore small talk, scheduling, billing, and unsupported guesses.
 - Merge repeated descriptions of the same outcome into one ticket and preserve all supporting quotes.
 - Split independent requested outcomes into separate tickets, even when they occur in one utterance.
-- Write titles, problems, and criteria in English. Preserve complete source utterances verbatim in quotes.
+- Write titles, problems, and criteria in English. Copy quotes verbatim from the transcript. When one utterance contains several requests, quote the exact contiguous excerpt for each request. Do not paraphrase or drop words inside an excerpt.
 - Use "unknown" when repository evidence is weak. Never guess from a language alone.
 - Record a vague, hypothetical, or "someday" software idea with confidence below 0.5 so a human can review it; do not silently promote or discard it.
 - High priority is reserved for blocking, data-loss, security, safety, or materially incorrect results.

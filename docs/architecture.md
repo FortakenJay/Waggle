@@ -70,7 +70,7 @@ Claude must return candidates through a structured tool call. The application th
 - kind, priority, confidence, and routing confidence are valid;
 - title, problem, criteria, requester, and quote bounds hold;
 - the requester is a transcript speaker;
-- every quote exactly matches a normalized utterance;
+- every quote is a verbatim utterance, or a verbatim contiguous excerpt when one utterance contains several requests;
 - any alias override still points to an available repository.
 
 Low-confidence, unknown, and malformed results take the review path. Validated inbox items can be assigned only to a cached repository, after which they rejoin the normal dedupe and write flow.

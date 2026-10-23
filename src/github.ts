@@ -131,8 +131,9 @@ const LABELS: Record<string, { color: string; description: string }> = {
 export async function ensureTicketLabels(
   repo: string,
   options: GitHubMutationOptions,
-): Promise<void> {
-  if (options.dryRun) return;
+): Promise<Set<string>> {
+  const wanted = new Set(Object.keys(LABELS).map((name) => name.toLowerCase()));
+  if (options.dryRun) return wanted;
   const api = client();
   const location = split(repo);
   const current = await api.paginate(api.issues.listLabelsForRepo, {
@@ -140,16 +141,29 @@ export async function ensureTicketLabels(
     per_page: 100,
   });
   const existing = new Set(current.map((label) => label.name.toLowerCase()));
+  let canCreate = true;
 
   for (const [name, definition] of Object.entries(LABELS)) {
     if (existing.has(name.toLowerCase())) continue;
+    if (!canCreate) continue;
     try {
       await api.issues.createLabel({ ...location, name, ...definition });
+      existing.add(name.toLowerCase());
     } catch (error) {
+      const status = (error as { status?: number }).status;
       // A concurrent process may have created the same label after our preflight.
-      if ((error as { status?: number }).status !== 422) throw error;
+      if (status === 422) continue;
+      if (status === 403) {
+        canCreate = false;
+        console.error(
+          `   ! ${repo} token cannot create labels; issues will use only labels that already exist.`,
+        );
+        continue;
+      }
+      throw error;
     }
   }
+  return existing;
 }
 
 function sourceBlock(ticket: Ticket, conversation: Conversation): string {
@@ -212,12 +226,15 @@ export async function createIssue(
   options: GitHubMutationOptions,
 ): Promise<GitHubWriteResult> {
   if (options.dryRun) return { applied: false };
-  await ensureTicketLabels(repo, options);
+  const available = await ensureTicketLabels(repo, options);
+  const labels = [ticket.kind, `priority:${ticket.priority}`, SOURCE_LABEL].filter(
+    (name) => available.has(name.toLowerCase()),
+  );
   const { data } = await client().issues.create({
     ...split(repo),
     title: ticket.title,
     body: issueBody(ticket, conversation, marker),
-    labels: [ticket.kind, `priority:${ticket.priority}`, SOURCE_LABEL],
+    labels,
   });
   return {
     applied: true,

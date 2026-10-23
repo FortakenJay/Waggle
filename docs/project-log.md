@@ -118,7 +118,7 @@ Local verification now records a passing typecheck, 8 passing local tests, 2 ski
 - **Choice:** Repeated descriptions of one outcome become one candidate; independent outcomes become separate candidates; authored fields are English while source utterances stay verbatim.
 - **Reason:** This produces actionable issues without erasing provenance or multilingual context.
 - **Alternatives / tradeoffs:** One utterance per ticket is deterministic but noisy; summarizing quotes loses source fidelity.
-- **Consequences:** Every quote must exactly match a normalized transcript utterance.
+- **Consequences:** Every quote must be a verbatim utterance, or a verbatim contiguous excerpt of one utterance when that line contains more than one request. A requester name can match a unique speaker by exact name or by a unique prefix of that speaker's transcript name. Conversations Bee has not completed are skipped and are not marked processed.
 - **Verification:** Validation code is present; fixture expectations and live extraction pending.
 
 ### D014 — Route uncertainty into a local inbox
@@ -268,6 +268,14 @@ Local verification now records a passing typecheck, 8 passing local tests, 2 ski
 - **Alternatives / tradeoffs:** Apache-2.0 adds a patent grant. BSD-3-Clause limits use of the authors' names for promotion. GPL-3.0, AGPL-3.0, and MPL-2.0 require sharing source of changes. Unlicense removes the notice requirement. A private repository with reviewer access was the earlier access alternative.
 - **Consequences:** The root `LICENSE` file is the text GitHub detects. The Open Source mini challenge remains unselected. The GitHub About label appears after this file is pushed.
 - **Verification:** After push, the GitHub license API for `FortakenJay/Waggle` reported SPDX `MIT` for the root `LICENSE` file.
+
+### D032 — Shape the README and Devpost draft around the official submission fields
+
+- **Choice:** The README, the demo video script, and the Devpost draft follow the Build, Ship, Shape fields: problem, live Bee-to-GitHub demo, architecture, setup, testing, challenges, what is next, and team plus license. Primary track remains Bee. Mini challenges stay unselected.
+- **Reason:** Jih supplied the hackathon brief on October 23, 2026 and asked for the README and docs to match it. The official rules page is https://amazonappdev2026.devpost.com/rules. The deadline is 12:00 pm Pacific the same day.
+- **Alternatives / tradeoffs:** A short marketing README is easier for a judge to skim and harder to run. The command reference stayed below the submission sections. An unlisted video was in the secondary brief; the rules require the video to be publicly visible on YouTube or Vimeo.
+- **Consequences:** The video URL, product-feedback answers, and the multi-utterance quote rule remain open. AWS Builder and the Open Source mini challenge are not claimed. The Open Source challenge asks for an additional public contribution beside the primary project.
+- **Verification:** The rules page was fetched on October 23, 2026. `npm run typecheck` passed. `npm test` reported 9 passed and 2 live-Claude tests skipped. Live `conv 11575767` and `conv 11576634` had already created SplitIt issues 1–6.
 
 ## Open decisions
 

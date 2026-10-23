@@ -1,5 +1,7 @@
 # Bee conversation test scripts
 
+These are rehearsal lines for a live Bee conversation. The submission video script, timed for the Devpost cut, is in [demo.md](demo.md).
+
 Use these scripts to test Waggle with a real Bee conversation while GitHub writes remain blocked.
 
 ## Before recording

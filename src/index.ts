@@ -352,17 +352,29 @@ async function processConversation(
   return operationIds;
 }
 
+function isConversationReady(conversation: Conversation): boolean {
+  const state = conversation.state?.trim().toUpperCase() ?? "";
+  if (!state) return true;
+  return state === "COMPLETED" || state === "COMPLETE" || state === "FINISHED";
+}
+
 async function processOnce(
   conversation: Conversation,
   cache: RepoCache,
   config: AppConfig,
   options: CliOptions,
-): Promise<void> {
+): Promise<boolean> {
+  if (!isConversationReady(conversation)) {
+    console.log(
+      `skip ${conversation.id} (Bee state ${conversation.state}; waiting until it is completed)`,
+    );
+    return false;
+  }
   if (isConversationProcessed(conversation.id) && !options.force) {
     console.log(
       `skip ${conversation.id} (already processed; use --force to re-extract)`,
     );
-    return;
+    return true;
   }
   const operationIds = await processConversation(
     conversation,
@@ -373,6 +385,7 @@ async function processOnce(
   if (!options.dryRun) {
     recordConversationProcessed(conversation.id, operationIds);
   }
+  return true;
 }
 
 function listRepositories(cache: RepoCache): void {
@@ -520,8 +533,13 @@ async function main(): Promise<void> {
     if (!Number.isInteger(count) || count < 1 || count > 100) {
       throw new Error("latest count must be an integer from 1 to 100.");
     }
-    for (const id of await listConversationIds(count)) {
-      await processOnce(await getConversation(id), cache, config, options);
+    const ids = await listConversationIds(Math.min(100, Math.max(count * 5, count)));
+    let handled = 0;
+    for (const id of ids) {
+      if (handled >= count) break;
+      if (await processOnce(await getConversation(id), cache, config, options)) {
+        handled++;
+      }
     }
     return;
   }

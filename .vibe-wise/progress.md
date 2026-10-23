@@ -13,6 +13,7 @@ Generalize Waggle from a fixed two-product prototype into a personal GitHub tick
 - GitHub retries use a local operation ledger and invisible operation markers.
 - Dry-run blocks GitHub mutations.
 - Documentation should use an approachable, narrative voice with truthful diagrams and terminal captures.
+- The public repository uses the MIT license. Copyright holders: Jih Bin Luo and Justin Meng.
 
 ## Work status
 
@@ -28,7 +29,6 @@ Generalize Waggle from a fixed two-product prototype into a personal GitHub tick
 
 ## Open decisions
 
-- Choose public repository plus license, or private repository plus required reviewer access.
 - Choose a safe live Bee conversation and GitHub repository for the video.
 - Decide whether to enter any mini challenge after the required evidence exists.
 - Set success targets only after recording a baseline.

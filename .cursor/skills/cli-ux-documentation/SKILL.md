@@ -40,7 +40,7 @@ Use a practical Medium-style voice: begin with the problem, explain the idea thr
 - Label target behavior and pending verification explicitly while integration is in progress.
 - A fixture can explain behavior but cannot replace the Bee track's live-data proof.
 - Never invent successful output, metrics, feedback, friction, dates, links, or screenshots.
-- Leave the public-license versus private-reviewer path open until Jih decides.
+- The public path and the MIT license are Jih's decision. Do not claim the Open Source mini challenge until its extra requirements are met.
 
 ## Review before publishing
 

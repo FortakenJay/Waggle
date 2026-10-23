@@ -70,7 +70,7 @@ Before marking a requirement complete, name its evidence:
 
 A fixture can explain behavior, but Bee-track evidence must show real Bee data doing something useful for a person.
 
-Do not add a license or claim private reviewer access until Jih chooses and completes that path. Do not claim AWS Builder or Open Source entry without the required integration and submission evidence.
+The license is MIT, copyright Jih Bin Luo and Justin Meng. Do not swap that license, claim private reviewer access, or claim AWS Builder or Open Source entry without a new decision and the required evidence.
 
 ## Collect feedback without leading it
 

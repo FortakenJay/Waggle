@@ -8,7 +8,8 @@ Everything below is draft material for Jih to review against the final build and
 - **Primary track:** Bee (Wearable AI)
 - **Relevant use cases:** Developer experience; personal productivity
 - **Mini challenges:** Not selected
-- **Repository URL:** `https://github.com/FortakenJay/Waggle` — named, not published yet
+- **Repository URL:** `https://github.com/FortakenJay/Waggle`
+- **License:** MIT. Copyright 2026 Jih Bin Luo and Justin Meng.
 - **Public demo video URL:** `[add after upload]`
 
 ### Short tagline
@@ -132,11 +133,11 @@ Actual feedback is pending direct use; the document does not pre-fill positive o
 
 ## Repository access decision
 
-The public path is chosen. The repository URL above is the intended GitHub location. It is not published yet.
+The public path is chosen. The repository is published at the URL above under the MIT license.
 
-Still required before publication:
+Still required before submission:
 
-- Select an open-source license and add the license file so GitHub shows it at the top of the repository page.
+- Confirm the repository page shows MIT in the About section.
 - Confirm all source, assets, and instructions required to run are included.
 - Enter the Open Source mini challenge only if all of its additional requirements are met.
 
@@ -157,7 +158,7 @@ The private reviewer path is no longer the chosen route. It would have meant sha
 
 ### Repository
 
-- [ ] Jih chose public plus license, or private plus reviewer access.
+- [x] Jih chose public plus the MIT license.
 - [ ] Repository URL is added to the submission.
 - [ ] Source code, assets, fixtures, and run instructions are included.
 - [ ] The repository visibly uses the required Bee technology.

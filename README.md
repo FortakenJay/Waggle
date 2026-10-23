@@ -280,4 +280,4 @@ The [project log](docs/project-log.md) records every established choice with its
 
 ## Repository access
 
-The chosen path is a public GitHub repository with an open-source license file visible on the repository page. The license itself is still unselected, so that file is not in the tree yet. The project does not claim the Open Source mini challenge.
+The repository is public at https://github.com/FortakenJay/Waggle. The license is MIT, copyright Jih Bin Luo and Justin Meng. The project does not claim the Open Source mini challenge.

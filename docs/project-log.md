@@ -261,13 +261,15 @@ Local verification now records a passing typecheck, 8 passing local tests, 2 ski
 - **Consequences:** A cache already written under `~/.bee-tickets/` is not read. A GitHub issue written with the old marker does not match a retry. The intended public repository is `https://github.com/FortakenJay/Waggle`.
 - **Verification:** Typecheck, tests, help, and the empty-inbox capture were re-run after this rename. Results are recorded in the README verification section.
 
+### D031 — Use the MIT license
+
+- **Choice:** License Waggle under MIT. The copyright holders are Jih Bin Luo and Justin Meng, 2026. The alias “Saken Et Al” is not written on the copyright line.
+- **Reason:** Jih chose the public repository path and then chose MIT. MIT lets others use, change, and ship the code, including in closed-source projects, if they keep the copyright and license notice.
+- **Alternatives / tradeoffs:** Apache-2.0 adds a patent grant. BSD-3-Clause limits use of the authors' names for promotion. GPL-3.0, AGPL-3.0, and MPL-2.0 require sharing source of changes. Unlicense removes the notice requirement. A private repository with reviewer access was the earlier access alternative.
+- **Consequences:** The root `LICENSE` file is the text GitHub detects. The Open Source mini challenge remains unselected. The GitHub About label appears after this file is pushed.
+- **Verification:** `LICENSE` is present in the working tree. The GitHub page has not been checked after a push of this file.
+
 ## Open decisions
-
-### O001 — License file for the public repository
-
-The public path is chosen. The private reviewer path is the earlier alternative: share a private repository with `testing@devpost.com` and `knmeiss`, `giolaq`, `anishamalde`, `mosesroth`, and `emersonsklar`.
-
-No license has been selected, so no license file is in the tree and the repository has not been published. Open Source mini-challenge entry has not been chosen. Jih still needs to name the license and the copyright holder.
 
 ### O002 — Demo data and repository
 

@@ -1,0 +1,64 @@
+{
+  "conversation": {
+    "id": "fixture-robotics-001",
+    "title": "Robotics team field-test review",
+    "start_time": "2026-10-20T16:00:00-05:00",
+    "summary": "The team reviewed reliability problems and reporting requests after a delivery-robot field test.",
+    "utterances": [
+      {
+        "speaker": "Mina",
+        "text": "The delivery rover loses Wi-Fi behind the engineering building and never reconnects unless we restart it."
+      },
+      {
+        "speaker": "Dev",
+        "text": "So the connection manager should recover on its own when the network comes back?"
+      },
+      {
+        "speaker": "Mina",
+        "text": "Yes, please make the robot reconnect automatically instead of waiting for a reboot."
+      },
+      {
+        "speaker": "Owen",
+        "text": "Dev, please add a CSV export of route durations before our next field test, and put battery temperature on the live dashboard."
+      },
+      {
+        "speaker": "Mina",
+        "text": "Maybe someday it could play a little song when it arrives, but that is not work for this semester."
+      }
+    ]
+  },
+  "repoProfiles": [
+    {
+      "fullName": "example-labs/delivery-robot",
+      "name": "delivery-robot",
+      "description": "Control software and operations dashboard for a campus delivery rover.",
+      "topics": ["robotics", "telemetry", "navigation"],
+      "language": "TypeScript",
+      "pushedAt": "2026-10-18T12:00:00Z",
+      "summary": "Software for a campus delivery robot, including onboard connectivity, route execution, telemetry collection, and its live operations dashboard. Work about rover reliability, field routes, batteries, or robot telemetry belongs here.",
+      "signals": ["robot", "rover", "wifi", "route", "telemetry", "battery", "dashboard"]
+    },
+    {
+      "fullName": "example-labs/course-portal",
+      "name": "course-portal",
+      "description": "A portal for course assignments and grading.",
+      "topics": ["education", "assignments"],
+      "language": "Python",
+      "pushedAt": "2026-10-15T12:00:00Z",
+      "summary": "A course portal for publishing assignments, collecting submissions, and showing grades. Classroom workflow and assignment-management work belongs here.",
+      "signals": ["course", "assignment", "submission", "grade", "classroom"]
+    }
+  ],
+  "aliases": {
+    "the robot": "example-labs/delivery-robot"
+  },
+  "expectations": {
+    "acceptedCount": 3,
+    "reviewCount": 1,
+    "repoCounts": {
+      "example-labs/delivery-robot": 3
+    },
+    "merge": "The two reconnect statements become one bug with both source quotes.",
+    "split": "CSV route export and live battery temperature become separate tickets."
+  }
+}

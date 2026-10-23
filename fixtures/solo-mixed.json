@@ -1,0 +1,62 @@
+{
+  "conversation": {
+    "id": "fixture-solo-002",
+    "title": "Personal project voice notes",
+    "start_time": "2026-10-21T21:15:00-05:00",
+    "summary": "Alex recorded mixed-language work notes for two personal repositories.",
+    "utterances": [
+      {
+        "speaker": "Alex",
+        "text": "For Study Planner, remind me to fix the flaky reminder test and add an iCalendar export for the weekly schedule."
+      },
+      {
+        "speaker": "Alex",
+        "text": "La exportación del calendario tiene que incluir la zona horaria de cada curso."
+      },
+      {
+        "speaker": "Alex",
+        "text": "On my portfolio site, the contact form sometimes sends the same message twice when I double-click Submit."
+      },
+      {
+        "speaker": "Alex",
+        "text": "Maybe one day the portfolio could have a 3D globe, but I have not decided what it should do."
+      }
+    ]
+  },
+  "repoProfiles": [
+    {
+      "fullName": "sample-dev/study-planner",
+      "name": "study-planner",
+      "description": "A study schedule and reminder application.",
+      "topics": ["education", "calendar", "reminders"],
+      "language": "TypeScript",
+      "pushedAt": "2026-10-20T12:00:00Z",
+      "summary": "A personal study-planning application for course schedules, reminders, and calendar-based organization. Work involving study reminders, weekly schedules, courses, tests, and calendar exports belongs here.",
+      "signals": ["study planner", "reminder", "schedule", "course", "calendar", "icalendar", "test"]
+    },
+    {
+      "fullName": "sample-dev/portfolio-web",
+      "name": "portfolio-web",
+      "description": "A personal portfolio and contact website.",
+      "topics": ["portfolio", "website"],
+      "language": "TypeScript",
+      "pushedAt": "2026-10-19T12:00:00Z",
+      "summary": "A personal portfolio website with project pages and a contact form. Work about portfolio presentation, contact submissions, and public-site behavior belongs here.",
+      "signals": ["portfolio", "contact form", "submit", "website", "project page"]
+    }
+  ],
+  "aliases": {
+    "study planner": "sample-dev/study-planner",
+    "portfolio site": "sample-dev/portfolio-web"
+  },
+  "expectations": {
+    "acceptedCount": 3,
+    "reviewCount": 1,
+    "repoCounts": {
+      "sample-dev/study-planner": 2,
+      "sample-dev/portfolio-web": 1
+    },
+    "split": "The flaky test and calendar export become separate tickets.",
+    "merge": "The Mandarin timezone requirement remains supporting evidence for the calendar-export ticket."
+  }
+}
